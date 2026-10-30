@@ -1,0 +1,211 @@
+[
+  {
+    "id": "hsk1-01",
+    "title": "01. Saluti e Presentazione",
+    "difficulty": "Principiante",
+    "hskLevel": 1,
+    "audioSrc": "/audio/hsk1_01_saluti.mp3",
+    "chineseText": "你好！很高兴认识你。我是李明。",
+    "pinyin": "Nǐ hǎo! Hěn gāoxìng rènshí nǐ. Wǒ shì Lǐ Míng.",
+    "translation": "Ciao! Molto piacere di conoscerti. Io sono Li Ming.",
+    "vocabulary": [
+      { "hanzi": "你好", "pinyin": "nǐ hǎo", "meaning": "ciao / salve" },
+      { "hanzi": "高兴", "pinyin": "gāoxìng", "meaning": "felice / contento" },
+      { "hanzi": "认识", "pinyin": "rènshi", "meaning": "conoscere" },
+      { "hanzi": "李明", "pinyin": "Lǐ Míng", "meaning": "Li Ming (nome proprio)" }
+    ],
+    "notes": "Nel parlato '你好' subisce il sandhi del terzo tono: 'nǐ' si pronuncia con secondo tono 'ní'."
+  },
+  {
+    "id": "hsk1-02",
+    "title": "02. Chiedere la Nazionalità",
+    "difficulty": "Principiante",
+    "hskLevel": 1,
+    "audioSrc": "/audio/hsk1_02_nazionalita.mp3",
+    "chineseText": "你是哪国人？我是意大利人，在学中文。",
+    "pinyin": "Nǐ shì nǎ guó rén? Wǒ shì Yìdàlì rén, zài xué Zhōngwén.",
+    "translation": "Di che nazionalità sei? Sono italiano, sto imparando il cinese.",
+    "vocabulary": [
+      { "hanzi": "哪国人", "pinyin": "nǎ guó rén", "meaning": "di quale paese / che nazionalità" },
+      { "hanzi": "意大利", "pinyin": "Yìdàlì", "meaning": "Italia" },
+      { "hanzi": "在", "pinyin": "zài", "meaning": "azione in corso (sto facendo)" },
+      { "hanzi": "学", "pinyin": "xué", "meaning": "studiare / imparare" },
+      { "hanzi": "中文", "pinyin": "Zhōngwén", "meaning": "lingua cinese" }
+    ],
+    "notes": "La particella '在' davanti al verbo indica un'azione continua o progressiva."
+  },
+  {
+    "id": "hsk1-03",
+    "title": "03. Data e Ora",
+    "difficulty": "Principiante",
+    "hskLevel": 1,
+    "audioSrc": "/audio/hsk1_03_tempo.mp3",
+    "chineseText": "今天星期五，现在是下午三点半。",
+    "pinyin": "Jīntiān xīngqīwǔ, xiànzài shì xiàwǔ sān diǎn bàn.",
+    "translation": "Oggi è venerdì, adesso sono le tre e mezza del pomeriggio.",
+    "vocabulary": [
+      { "hanzi": "今天", "pinyin": "jīntiān", "meaning": "oggi" },
+      { "hanzi": "星期五", "pinyin": "xīngqīwǔ", "meaning": "venerdì" },
+      { "hanzi": "现在", "pinyin": "xiànzài", "meaning": "ora / adesso" },
+      { "hanzi": "下午", "pinyin": "xiàwǔ", "meaning": "pomeriggio" },
+      { "hanzi": "三点半", "pinyin": "sān diǎn bàn", "meaning": "le tre e mezza" }
+    ],
+    "notes": "In cinese si indica sempre prima la parte del giorno (下午) e poi l'orario specifico (三点半)."
+  },
+  {
+    "id": "hsk2-01",
+    "title": "04. Ordinare al Ristorante",
+    "difficulty": "Principiante",
+    "hskLevel": 2,
+    "audioSrc": "/audio/hsk2_01_ristorante.mp3",
+    "chineseText": "服务员，请给我们一份菜单，一碗米饭和两杯茶。",
+    "pinyin": "Fúwùyuán, qǐng gěi wǒmen yí fèn càidān, yì wǎn mǐfàn hé liǎng bēi chá.",
+    "translation": "Cameriere, per favore ci dia un menu, una ciotola di riso e due tazze di tè.",
+    "vocabulary": [
+      { "hanzi": "服务员", "pinyin": "fúwùyuán", "meaning": "cameriere" },
+      { "hanzi": "菜单", "pinyin": "càidān", "meaning": "menu" },
+      { "hanzi": "碗", "pinyin": "wǎn", "meaning": "ciotola (classificatore)" },
+      { "hanzi": "米饭", "pinyin": "mǐfàn", "meaning": "riso cotto" },
+      { "hanzi": "两杯", "pinyin": "liǎng bēi", "meaning": "due bicchieri/tazze" }
+    ],
+    "notes": "Per contare oggetti con classificatori si usa '两' (liǎng) e non '二' (èr)."
+  },
+  {
+    "id": "hsk2-02",
+    "title": "05. Fare Acquisti e Prezzi",
+    "difficulty": "Intermedio",
+    "hskLevel": 2,
+    "audioSrc": "/audio/hsk2_02_spesa.mp3",
+    "chineseText": "这件黑色的外套多少钱？有点贵，可以便宜一点吗？",
+    "pinyin": "Zhè jiàn hēisè de wàitào duōshao qián? Yǒudiǎn guì, kěyǐ piányi yìdiǎnr ma?",
+    "translation": "Quanto costa questa giacca nera? È un po' cara, si può fare un po' di sconto?",
+    "vocabulary": [
+      { "hanzi": "件", "pinyin": "jiàn", "meaning": "classificatore per capi di abbigliamento" },
+      { "hanzi": "外套", "pinyin": "wàitào", "meaning": "giacca / cappotto" },
+      { "hanzi": "多少钱", "pinyin": "duōshao qián", "meaning": "quanto costa?" },
+      { "hanzi": "便宜", "pinyin": "piányi", "meaning": "economico / conveniente" }
+    ],
+    "notes": "'有点' (yǒudiǎn) esprime una sensazione negativa o sfavorevole ('un po' troppo')."
+  },
+  {
+    "id": "hsk3-01",
+    "title": "06. Chiedere Indicazioni Stradali",
+    "difficulty": "Intermedio",
+    "hskLevel": 3,
+    "audioSrc": "/audio/hsk3_01_strada.mp3",
+    "chineseText": "请问，去地铁站怎么走？往前一直走，在第二个路口向右拐。",
+    "pinyin": "Qǐngwèn, qù dìtiězhàn zěnme zǒu? Wǎng qián yìzhí zǒu, zài dì èr gè lùkǒu xiàng yòu guǎi.",
+    "translation": "Mi scusi, come si va alla stazione della metropolitana? Vada sempre dritto, al secondo incrocio giri a destra.",
+    "vocabulary": [
+      { "hanzi": "地铁站", "pinyin": "dìtiězhàn", "meaning": "stazione metro" },
+      { "hanzi": "一直", "pinyin": "yìzhí", "meaning": "sempre dritto / continuamente" },
+      { "hanzi": "路口", "pinyin": "lùkǒu", "meaning": "incrocio stradale" },
+      { "hanzi": "向右拐", "pinyin": "xiàng yòu guǎi", "meaning": "svoltare a destra" }
+    ],
+    "notes": "La struttura '往...走' o '向...拐' indica la direzione del movimento."
+  },
+  {
+    "id": "hsk3-02",
+    "title": "07. Previsioni del Tempo e Fine Settimana",
+    "difficulty": "Intermedio",
+    "hskLevel": 3,
+    "audioSrc": "/audio/hsk3_02_meteo.mp3",
+    "chineseText": "天气预报说这个周末会下大雨，温度也会下降五度左右。",
+    "pinyin": "Tiānqì yùbào shuō zhège zhōumò huì xià dàyǔ, wēndù yě huì xiàjiàng wǔ dù zuǒyòu.",
+    "translation": "Le previsioni del tempo dicono che questo fine settimana pioverà forte e la temperatura scenderà di circa cinque gradi.",
+    "vocabulary": [
+      { "hanzi": "天气预报", "pinyin": "tiānqì yùbào", "meaning": "previsioni meteo" },
+      { "hanzi": "周末", "pinyin": "zhōumò", "meaning": "fine settimana" },
+      { "hanzi": "温度", "pinyin": "wēndù", "meaning": "temperatura" },
+      { "hanzi": "下降", "pinyin": "xiàjiàng", "meaning": "diminuire / scendere" },
+      { "hanzi": "左右", "pinyin": "zuǒyòu", "meaning": "all'incirca / circa" }
+    ],
+    "notes": "'会' qui non indica abilità ma probabilità futura ('accadrà che')."
+  },
+  {
+    "id": "hsk4-01",
+    "title": "08. Viaggio in Treno e Biglietti",
+    "difficulty": "Intermedio",
+    "hskLevel": 4,
+    "audioSrc": "/audio/hsk4_01_treno.mp3",
+    "chineseText": "因为遇到大雾天气，原本十点出发的高铁推迟了半个小时。",
+    "pinyin": "Yīnwèi yùdào dà wù tiānqì, yuánběn shí diǎn chūfā de gāotiě tuīchí le bàn gè xiǎoshí.",
+    "translation": "A causa della fitta nebbia, il treno ad alta velocità che doveva partire alle dieci ha subito un ritardo di mezz'ora.",
+    "vocabulary": [
+      { "hanzi": "高铁", "pinyin": "gāotiě", "meaning": "treno ad alta velocità" },
+      { "hanzi": "原本", "pinyin": "yuánběn", "meaning": "originariamente" },
+      { "hanzi": "出发", "pinyin": "chūfā", "meaning": "partire" },
+      { "hanzi": "推迟", "pinyin": "tuīchí", "meaning": "posticipare / ritardare" }
+    ],
+    "notes": "Costruzione causale con '因为...，(所以)...'."
+  },
+  {
+    "id": "hsk4-02",
+    "title": "09. Abitudini di Studio e Perseveranza",
+    "difficulty": "Avanzato",
+    "hskLevel": 4,
+    "audioSrc": "/audio/hsk4_02_studio.mp3",
+    "chineseText": "学习外语不仅需要浓厚的兴趣，更需要持之以恒的坚持和不断地练习。",
+    "pinyin": "Xuéxí wàiyǔ bùjǐn xūyào nónghòu de xìngqù, gèng xūyào chízhīyǐhéng de jiānchí hé búduàn de liànxí.",
+    "translation": "Imparare una lingua straniera non richiede solo un forte interesse, ma soprattutto una perseveranza costante e un esercizio continuo.",
+    "vocabulary": [
+      { "hanzi": "不仅...更...", "pinyin": "bùjǐn... gèng...", "meaning": "non solo... ma ancora di più..." },
+      { "hanzi": "浓厚", "pinyin": "nónghòu", "meaning": "forte / intenso" },
+      { "hanzi": "持之以恒", "pinyin": "chí zhī yǐ héng", "meaning": "perseverare con costanza (chengyu)" },
+      { "hanzi": "不断", "pinyin": "búduàn", "meaning": "incessante / continuo" }
+    ],
+    "notes": "'持之以恒' è un classico chengyu formato da quattro caratteri."
+  },
+  {
+    "id": "hsk5-01",
+    "title": "10. Cultura del Tè Cinese",
+    "difficulty": "Avanzato",
+    "hskLevel": 5,
+    "audioSrc": "/audio/hsk5_01_cultura_te.mp3",
+    "chineseText": "中国茶文化源远流长，品茶不仅是解渴的方式，更蕴含着修身养性的生活哲学。",
+    "pinyin": "Zhōngguó chá wénhuà yuányuǎnliúcháng, pǐn chá bùjǐn shì jiěkě de fāngshì, gèng yùnhán zhe xiūshēnyǎngxìng de shēnghuó zhéxué.",
+    "translation": "La cultura del tè cinese ha origini antichissime; degustare il tè non è solo un modo per dissetarsi, ma racchiude una filosofia di vita incentrata sull'auto-coltivazione morale.",
+    "vocabulary": [
+      { "hanzi": "源远流长", "pinyin": "yuányuǎnliúcháng", "meaning": "antico e di lunga tradizione" },
+      { "hanzi": "品茶", "pinyin": "pǐn chá", "meaning": "degustare il tè" },
+      { "hanzi": "解渴", "pinyin": "jiěkě", "meaning": "dissetarsi" },
+      { "hanzi": "蕴含", "pinyin": "yùnhán", "meaning": "racchiudere / contenere in sé" },
+      { "hanzi": "修身养性", "pinyin": "xiūshēnyǎngxìng", "meaning": "elevare il proprio spirito e coltivare la virtù" }
+    ],
+    "notes": "Testo avanzato ricco di espressioni idiomatiche tradizionali e linguaggio formale."
+  },
+  {
+    "id": "hsk5-02",
+    "title": "11. Sviluppo Urbano e Tecnologia",
+    "difficulty": "Avanzato",
+    "hskLevel": 5,
+    "audioSrc": "/audio/hsk5_02_tecnologia.mp3",
+    "chineseText": "随着数字化技术的普及，移动支付和共享经济深刻改变了现代人的日常消费习惯。",
+    "pinyin": "Suízhe shùzìhuà jìshù de pǔjí, yídòng zhīfù hé gòngxiǎng jīngjì shēnkè gǎibiàn le xiàndàirén de rìcháng xiāofèi xíguàn.",
+    "translation": "Con la diffusione delle tecnologie digitali, i pagamenti mobili e la sharing economy hanno profondamente trasformato le abitudini di consumo quotidiano delle persone moderne.",
+    "vocabulary": [
+      { "hanzi": "数字化", "pinyin": "shùzìhuà", "meaning": "digitalizzazione" },
+      { "hanzi": "普及", "pinyin": "pǔjí", "meaning": "diffusione capillare" },
+      { "hanzi": "移动支付", "pinyin": "yídòng zhīfù", "meaning": "pagamento da mobile" },
+      { "hanzi": "深刻", "pinyin": "shēnkè", "meaning": "profondamente" }
+    ],
+    "notes": "La struttura '随着...' introduce una circostanza temporale/evolutiva concomitante ('con il...')."
+  },
+  {
+    "id": "hsk6-01",
+    "title": "12. Ecologia e Armonia Uomo-Natura",
+    "difficulty": "Avanzato",
+    "hskLevel": 6,
+    "audioSrc": "/audio/hsk6_01_ecologia.mp3",
+    "chineseText": "人与自然是不可分割的生命共同体，唯有尊重自然规律，方能实现经济与环境的协调发展。",
+    "pinyin": "Rén yǔ zìrán shì bùkě fēngē de shēngmìng gòngtóngtǐ, wéiyǒu zūnzhòng zìrán guīlǜ, fāng néng shíxiàn jīngjì yǔ huánjìng de xiétiáo fāzhǎn.",
+    "translation": "L'uomo e la natura costituiscono una comunità di vita inseparabile; solo rispettando le leggi della natura si può raggiungere uno sviluppo armonioso tra economia e ambiente.",
+    "vocabulary": [
+      { "hanzi": "不可分割", "pinyin": "bùkě fēngē", "meaning": "inseparabile / indivisibile" },
+      { "hanzi": "共同体", "pinyin": "gòngtóngtǐ", "meaning": "comunità / entità comune" },
+      { "hanzi": "唯有...方能...", "pinyin": "wéiyǒu... fāng néng...", "meaning": "solo se... allora si potrà..." },
+      { "hanzi": "协调", "pinyin": "xiétiáo", "meaning": "armonioso / coordinato" }
+    ],
+    "notes": "Costruzione letteraria classica: '唯有' (solo con) collegato a '方能' (allora e solo allora si può)."
+  }
+]
