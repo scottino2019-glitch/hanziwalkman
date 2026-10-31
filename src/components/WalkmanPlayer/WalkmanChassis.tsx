@@ -18,8 +18,6 @@ import {
   ChevronRight,
   ChevronDown,
   ChevronUp,
-  Sliders,
-  Plus,
   CheckCircle,
   FileAudio,
 } from 'lucide-react';
@@ -36,7 +34,7 @@ interface WalkmanChassisProps {
   onNextTrack: () => void;
   settings: AudioSettings;
   onUpdateSettings: (newSettings: Partial<AudioSettings>) => void;
-  onOpenLibrary: () => void;
+  onOpenLibrary?: () => void;
   attempts?: Record<string, DictationAttempt>;
   onSentenceComplete?: () => void;
 }
@@ -61,7 +59,7 @@ export const WalkmanChassis: React.FC<WalkmanChassisProps> = ({
   // Colorway state (default: 90s Sports Yellow)
   const [colorway, setColorway] = useState<WalkmanColorway>('sports_yellow');
 
-  // Tape rack filter state
+  // Tape filter state
   const [selectedFilter, setSelectedFilter] = useState<string>('TUTTI');
 
   // Collapsible Audio Options ("a scomparsa") under the track/display
@@ -84,7 +82,7 @@ export const WalkmanChassis: React.FC<WalkmanChassisProps> = ({
   const pauseTimerRef = useRef<number | null>(null);
   const progress = duration > 0 ? Math.min(1, Math.max(0, currentTime / duration)) : 0;
 
-  // Scroll active cassette card into view when currentTrack changes
+  // Scroll active tape item into view when currentTrack changes
   useEffect(() => {
     if (!currentTrack || !tapeRackRef.current) return;
     const activeEl = tapeRackRef.current.querySelector(`[data-tape-id="${currentTrack.id}"]`);
@@ -140,7 +138,11 @@ export const WalkmanChassis: React.FC<WalkmanChassisProps> = ({
   // Play
   const handlePlay = useCallback(() => {
     if (!currentTrack) {
-      onOpenLibrary();
+      if (dictations.length > 0) {
+        onSelectTrack(dictations[0]);
+      } else if (onOpenLibrary) {
+        onOpenLibrary();
+      }
       return;
     }
 
@@ -286,8 +288,7 @@ export const WalkmanChassis: React.FC<WalkmanChassisProps> = ({
 
   const scrollTapeRack = (direction: 'left' | 'right') => {
     if (!tapeRackRef.current) return;
-    const scrollAmount = direction === 'left' ? -220 : 220;
-    tapeRackRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    tapeRackRef.current.scrollBy({ left: direction === 'left' ? -200 : 200, behavior: 'smooth' });
   };
 
   const filteredDictations = dictations.filter((d) => {
@@ -295,7 +296,6 @@ export const WalkmanChassis: React.FC<WalkmanChassisProps> = ({
     if (selectedFilter === 'PRINCIPIANTE') return d.difficulty === 'Principiante';
     if (selectedFilter === 'INTERMEDIO') return d.difficulty === 'Intermedio';
     if (selectedFilter === 'AVANZATO') return d.difficulty === 'Avanzato';
-    if (selectedFilter === 'CUSTOM') return !!d.isCustom;
     return true;
   });
 
@@ -333,77 +333,64 @@ export const WalkmanChassis: React.FC<WalkmanChassisProps> = ({
         className={`w-full rounded-3xl ${colorwayStyles.bodyGrad} border-4 ${colorwayStyles.border} p-3.5 sm:p-5 shadow-[inset_0_2px_4px_rgba(255,255,255,0.4),0_12px_28px_rgba(0,0,0,0.25)] space-y-3.5`}
       >
         {/* ============================================================== */}
-        {/* 1. IN PRIMO PIANO IN ALTO: IL MENÙ DEI NASTRI SUBITO VISIBILE  */}
+        {/* 1. MENÙ DEI NASTRI SCORREVOLE IN ALTO (INTEGRATO NELLA SCOCCA) */}
         {/* ============================================================== */}
-        <div className="bg-neutral-900 border-2 border-neutral-700 rounded-2xl p-3 shadow-md space-y-2.5">
-          {/* Top Bar: Brand, Colore Walkman, Tasto Aggiungi MP3 */}
+        <div className="bg-neutral-900 border-2 border-neutral-700 rounded-2xl p-3 shadow-md space-y-2">
+          {/* Header Bar: Brand, Colore Walkman, Conteggio */}
           <div className="flex flex-wrap items-center justify-between pb-2 border-b border-neutral-800 gap-2">
             <div className="flex items-center gap-2">
               <div className="w-2.5 h-4 bg-red-600 rounded-xs"></div>
               <span className="font-mono font-black text-xs sm:text-sm tracking-widest text-neutral-100">
-                SPORTS WM-90 · NASTRI
+                SPORTS WM-90
               </span>
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 font-bold border border-amber-500/30">
-                {dictations.length} CASSETTE
+              <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                NASTRI ({dictations.length})
               </span>
             </div>
 
             <div className="flex items-center gap-2">
               {/* Palette Selector */}
-              <div className="flex items-center gap-1 bg-neutral-950 p-1 rounded-lg border border-neutral-800">
-                <Palette className="w-3 h-3 text-neutral-400 ml-1" />
+              <div className="flex items-center gap-1.5 bg-neutral-950 p-1.5 rounded-lg border border-neutral-800">
+                <Palette className="w-3.5 h-3.5 text-neutral-400 ml-0.5" />
                 <button
                   onClick={() => setColorway('sports_yellow')}
                   title="Giallo Sports"
-                  className={`w-3.5 h-3.5 rounded-full bg-amber-500 transition border ${
-                    colorway === 'sports_yellow' ? 'border-white scale-110' : 'border-neutral-700 opacity-60'
+                  className={`w-4 h-4 rounded-full bg-amber-500 transition border ${
+                    colorway === 'sports_yellow' ? 'border-white scale-110 shadow-xs' : 'border-neutral-700 opacity-60'
                   }`}
                 />
                 <button
                   onClick={() => setColorway('brushed_silver')}
                   title="Argento"
-                  className={`w-3.5 h-3.5 rounded-full bg-slate-300 transition border ${
-                    colorway === 'brushed_silver' ? 'border-white scale-110' : 'border-neutral-700 opacity-60'
+                  className={`w-4 h-4 rounded-full bg-slate-300 transition border ${
+                    colorway === 'brushed_silver' ? 'border-white scale-110 shadow-xs' : 'border-neutral-700 opacity-60'
                   }`}
                 />
                 <button
                   onClick={() => setColorway('cobalt_teal')}
                   title="Teal"
-                  className={`w-3.5 h-3.5 rounded-full bg-teal-500 transition border ${
-                    colorway === 'cobalt_teal' ? 'border-white scale-110' : 'border-neutral-700 opacity-60'
+                  className={`w-4 h-4 rounded-full bg-teal-500 transition border ${
+                    colorway === 'cobalt_teal' ? 'border-white scale-110 shadow-xs' : 'border-neutral-700 opacity-60'
                   }`}
                 />
               </div>
-
-              {/* Tasto Aggiungi MP3 / Gestione Libreria */}
-              <button
-                onClick={() => {
-                  soundFx.playClick('switch');
-                  onOpenLibrary();
-                }}
-                title="Aggiungi MP3 o visualizza tutta la libreria"
-                className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-400 text-stone-950 text-[11px] font-mono font-bold border border-amber-400 cursor-pointer shadow-xs transition"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>+ AGGIUNGI MP3</span>
-              </button>
             </div>
           </div>
 
-          {/* Filtri rapidi per difficoltà */}
+          {/* Filtri rapidi per difficoltà & frecce scorrimento */}
           <div className="flex items-center justify-between gap-1">
-            <div className="flex flex-wrap gap-1 font-mono text-[10px]">
-              {(['TUTTI', 'PRINCIPIANTE', 'INTERMEDIO', 'AVANZATO', 'CUSTOM'] as const).map((cat) => (
+            <div className="flex flex-wrap gap-1 font-mono text-xs">
+              {(['TUTTI', 'PRINCIPIANTE', 'INTERMEDIO', 'AVANZATO'] as const).map((cat) => (
                 <button
                   key={cat}
                   onClick={() => {
                     soundFx.playClick('switch');
                     setSelectedFilter(cat);
                   }}
-                  className={`px-2 py-0.5 rounded font-bold border transition cursor-pointer ${
+                  className={`px-2.5 py-0.5 rounded-lg font-bold border transition cursor-pointer text-xs ${
                     selectedFilter === cat
                       ? 'bg-amber-500 text-stone-950 border-amber-300 shadow-2xs'
-                      : 'bg-neutral-950 hover:bg-neutral-800 text-neutral-400 border-neutral-800'
+                      : 'bg-neutral-950 hover:bg-neutral-800 text-neutral-300 border-neutral-800'
                   }`}
                 >
                   {cat === 'TUTTI'
@@ -412,50 +399,45 @@ export const WalkmanChassis: React.FC<WalkmanChassisProps> = ({
                     ? 'Base'
                     : cat === 'INTERMEDIO'
                     ? 'Intermedio'
-                    : cat === 'AVANZATO'
-                    ? 'Avanzato'
-                    : 'Personalizzati'}
+                    : 'Avanzato'}
                 </button>
               ))}
             </div>
 
-            {/* Scroll buttons for Tape Rack */}
-            <div className="hidden sm:flex items-center gap-1">
+            {/* Frecce scorrimento orizzontale */}
+            <div className="flex items-center gap-1">
               <button
                 onClick={() => scrollTapeRack('left')}
-                className="p-1 rounded bg-neutral-950 hover:bg-neutral-800 text-neutral-400 hover:text-white border border-neutral-800 transition"
-                title="Scorri nastri indietro"
+                className="p-1 rounded-lg bg-neutral-950 hover:bg-neutral-800 text-neutral-300 hover:text-white border border-neutral-800 transition cursor-pointer"
+                title="Scorri indietro"
               >
-                <ChevronLeft className="w-3 h-3" />
+                <ChevronLeft className="w-3.5 h-3.5" />
               </button>
               <button
                 onClick={() => scrollTapeRack('right')}
-                className="p-1 rounded bg-neutral-950 hover:bg-neutral-800 text-neutral-400 hover:text-white border border-neutral-800 transition"
-                title="Scorri nastri avanti"
+                className="p-1 rounded-lg bg-neutral-950 hover:bg-neutral-800 text-neutral-300 hover:text-white border border-neutral-800 transition cursor-pointer"
+                title="Scorri avanti"
               >
-                <ChevronRight className="w-3 h-3" />
+                <ChevronRight className="w-3.5 h-3.5" />
               </button>
             </div>
           </div>
 
-          {/* RACK CASSETTE: Selezione diretta a colpo d'occhio */}
+          {/* MENÙ SCORREVOLE INTEGRATO DEI NASTRI (Fluido, chiaro, ad alto contrasto) */}
           <div
             ref={tapeRackRef}
-            className="flex gap-2 overflow-x-auto pb-1 pt-0.5 scrollbar-thin scrollbar-thumb-neutral-700 scrollbar-track-neutral-950"
-            style={{ scrollSnapType: 'x mandatory' }}
+            className="flex gap-2 overflow-x-auto pb-1.5 pt-0.5 scrollbar-thin scrollbar-thumb-neutral-700 scrollbar-track-neutral-950 scroll-smooth"
           >
             {filteredDictations.map((track) => {
               const isSelected = track.id === currentTrack?.id;
               const attempt = attempts[track.id];
 
-              const diffBadgeClass =
+              const diffColor =
                 track.difficulty === 'Principiante'
-                  ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                  ? 'border-l-amber-500 bg-amber-50/90 text-amber-950'
                   : track.difficulty === 'Intermedio'
-                  ? 'bg-blue-500/20 text-blue-300 border-blue-500/40'
-                  : track.difficulty === 'Avanzato'
-                  ? 'bg-red-500/20 text-red-300 border-red-500/40'
-                  : 'bg-purple-500/20 text-purple-300 border-purple-500/40';
+                  ? 'border-l-sky-500 bg-sky-50/90 text-sky-950'
+                  : 'border-l-rose-500 bg-rose-50/90 text-rose-950';
 
               return (
                 <button
@@ -465,53 +447,50 @@ export const WalkmanChassis: React.FC<WalkmanChassisProps> = ({
                     soundFx.playClick('switch');
                     onSelectTrack(track);
                   }}
-                  style={{ scrollSnapAlign: 'start' }}
-                  className={`flex-none w-44 sm:w-48 text-left p-2 rounded-xl border transition-all cursor-pointer relative group ${
+                  className={`shrink-0 w-48 sm:w-56 text-left p-2.5 rounded-xl border-2 transition-all cursor-pointer flex flex-col justify-between shadow-2xs group ${
                     isSelected
-                      ? 'bg-neutral-800/90 border-amber-400 ring-2 ring-amber-400/50 shadow-md'
-                      : 'bg-neutral-950 hover:bg-neutral-900 border-neutral-800 hover:border-neutral-700'
-                  }`}
+                      ? 'bg-amber-100 border-amber-500 ring-2 ring-amber-400 shadow-xs'
+                      : 'bg-[#faf8f5] hover:bg-white border-stone-300 hover:border-amber-400'
+                  } border-l-4 ${diffColor}`}
                 >
-                  {/* Cassette Header Bar inside mini-card */}
-                  <div className="flex items-center justify-between gap-1 mb-1 font-mono text-[9px]">
-                    <span
-                      className={`font-bold uppercase px-1.5 py-0.2 rounded border ${diffBadgeClass}`}
-                    >
+                  <div className="flex items-center justify-between gap-1 mb-1 font-mono text-[10px]">
+                    <span className="font-bold uppercase tracking-wide">
                       {track.difficulty}
                     </span>
-
                     {isSelected ? (
-                      <span className="flex items-center gap-1 text-amber-400 font-black animate-pulse">
-                        <Disc className="w-2.5 h-2.5 animate-spin" />
-                        INSERITO
+                      <span className="flex items-center gap-1 font-black text-amber-800 bg-amber-200/80 px-1.5 py-0.2 rounded font-mono">
+                        <Disc className="w-3 h-3 text-amber-700 animate-spin" />
+                        IN USO
                       </span>
                     ) : attempt?.completed ? (
-                      <span className="flex items-center gap-0.5 text-emerald-400 font-bold">
-                        <CheckCircle className="w-2.5 h-2.5" />
+                      <span className="flex items-center gap-0.5 font-bold text-emerald-700">
+                        <CheckCircle className="w-3 h-3 text-emerald-600" />
                         {attempt.score}%
                       </span>
                     ) : (
-                      <span className="text-neutral-500 group-hover:text-neutral-300">CARICA ▶</span>
+                      <span className="text-stone-400 group-hover:text-amber-700 font-bold">
+                        CARICA ▶
+                      </span>
                     )}
                   </div>
 
-                  {/* Title & Preview Text */}
-                  <div className="font-mono font-bold text-xs text-neutral-100 truncate">
+                  {/* Titolo Traccia */}
+                  <div className="font-sans font-bold text-xs sm:text-sm text-stone-950 truncate">
                     {track.title}
                   </div>
-                  <div className="font-sans text-[11px] text-neutral-400 truncate mt-0.5">
+
+                  {/* Frase Cinese */}
+                  <div className="font-sans text-xs sm:text-sm font-semibold text-stone-850 truncate mt-0.5">
                     {track.chineseText}
                   </div>
 
-                  {/* Bottom mini-cassette strip */}
-                  <div className="mt-1.5 pt-1 border-t border-neutral-800/70 flex items-center justify-between text-[9px] font-mono text-neutral-500">
-                    <span className="flex items-center gap-1 truncate max-w-[100px]">
-                      <FileAudio className="w-2.5 h-2.5 text-neutral-400 shrink-0" />
+                  {/* File audio */}
+                  <div className="mt-1.5 pt-1 border-t border-stone-200/80 flex items-center justify-between text-[10px] font-mono text-stone-600">
+                    <span className="flex items-center gap-1 truncate max-w-[130px]">
+                      <FileAudio className="w-3 h-3 text-stone-400 shrink-0" />
                       <span className="truncate">{track.audioSrc.split('/').pop()}</span>
                     </span>
-                    <span className="text-neutral-400 font-bold">
-                      {isSelected ? '● IN USO' : 'C-60'}
-                    </span>
+                    <span className="font-bold text-stone-500 shrink-0">C-60</span>
                   </div>
                 </button>
               );
@@ -570,28 +549,19 @@ export const WalkmanChassis: React.FC<WalkmanChassisProps> = ({
             audioSource={settings.voiceMode === 'speech_synthesis' ? 'speech' : 'mp3'}
           />
 
-          {/* REGOLAZIONI AUDIO A SCOMPARSA (VELOCITÀ, VOLUME, EQUALIZZATORE, CLICK) */}
+          {/* REGOLAZIONI A SCOMPARSA (Solo scritta REGOLAZIONI e Mostra/Nascondi) */}
           <div className="pt-1">
             <button
               onClick={() => {
                 soundFx.playClick('switch');
                 setIsOptionsOpen((prev) => !prev);
               }}
-              className="w-full flex items-center justify-between px-3 py-1.5 rounded-xl bg-neutral-950 hover:bg-neutral-800 border border-neutral-800 text-neutral-300 text-xs font-mono transition cursor-pointer"
+              className="w-full flex items-center justify-between px-3.5 py-2 rounded-xl bg-neutral-950 hover:bg-neutral-800 border border-neutral-800 text-neutral-200 text-xs font-mono transition cursor-pointer"
             >
-              <div className="flex items-center gap-2 truncate">
-                <Sliders className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                <span className="font-bold text-neutral-200">
-                  REGOLAZIONI AUDIO (Volume, Velocità, EQ)
-                </span>
-                {!isOptionsOpen && (
-                  <span className="text-[10px] text-neutral-500 font-normal hidden sm:inline truncate">
-                    · Vol: {Math.round(settings.volume * 100)}% · {settings.playbackRate.toFixed(2)}x ·{' '}
-                    {settings.tapeEq} EQ
-                  </span>
-                )}
-              </div>
-              <div className="flex items-center gap-1 shrink-0 text-amber-400 font-bold text-[11px]">
+              <span className="font-bold tracking-wider uppercase text-neutral-200">
+                REGOLAZIONI
+              </span>
+              <div className="flex items-center gap-1.5 text-amber-400 font-bold text-xs">
                 <span>{isOptionsOpen ? 'Nascondi' : 'Mostra'}</span>
                 {isOptionsOpen ? (
                   <ChevronUp className="w-4 h-4" />

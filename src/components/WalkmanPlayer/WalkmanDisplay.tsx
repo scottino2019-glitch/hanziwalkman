@@ -64,12 +64,12 @@ export const WalkmanDisplay: React.FC<WalkmanDisplayProps> = ({
 
   return (
     <div className="w-full bg-neutral-900 border-2 border-neutral-700 rounded-xl p-3 shadow-[inset_0_2px_4px_rgba(0,0,0,0.8),0_2px_6px_rgba(0,0,0,0.4)]">
-      {/* Top Header: Mechanical Tape Counter & Indicators */}
-      <div className="flex items-center justify-between pb-2 mb-2 border-b border-neutral-800 text-[11px] font-mono">
+      {/* Top Header: Mechanical Tape Counter & Indicators (Responsive, guaranteed not to overflow) */}
+      <div className="flex flex-wrap items-center justify-between gap-y-1.5 pb-2 mb-2 border-b border-neutral-800 text-[11px] font-mono">
         {/* Mechanical 3-digit Counter with Plunger Button */}
-        <div className="flex items-center gap-2">
-          <span className="text-neutral-400 font-bold uppercase tracking-wider text-[9px]">TAPE COUNTER</span>
-          <div className="flex items-center bg-black border-2 border-neutral-700 px-2 py-0.5 rounded shadow-[inset_0_2px_4px_rgba(0,0,0,0.9)]">
+        <div className="flex items-center gap-1.5 shrink-0">
+          <span className="text-neutral-400 font-bold uppercase tracking-wider text-[9px]">COUNTER</span>
+          <div className="flex items-center bg-black border-2 border-neutral-700 px-1.5 py-0.5 rounded shadow-[inset_0_2px_4px_rgba(0,0,0,0.9)]">
             <span className="text-white font-black tracking-widest text-xs font-mono">{counterStr}</span>
           </div>
           <button
@@ -77,7 +77,7 @@ export const WalkmanDisplay: React.FC<WalkmanDisplayProps> = ({
               soundFx.playClick('switch');
               onResetCounter();
             }}
-            title="Azzera Contagiri Meccanico"
+            title="Azzera Contatore"
             className="w-5 h-5 rounded-full bg-gradient-to-b from-neutral-600 to-neutral-800 hover:from-neutral-500 hover:to-neutral-700 active:scale-90 border border-neutral-500 flex items-center justify-center text-[8px] font-bold text-white shadow-xs cursor-pointer"
           >
             0
@@ -85,16 +85,16 @@ export const WalkmanDisplay: React.FC<WalkmanDisplayProps> = ({
         </div>
 
         {/* Source & Battery Indicator */}
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1 text-[10px] text-neutral-400">
-            <span>SORGENTE:</span>
-            <span className={`font-bold ${audioSource === 'mp3' ? 'text-amber-400' : 'text-cyan-400'}`}>
-              {audioSource === 'mp3' ? 'MP3 CASSETTA' : 'SINTESI zh-CN'}
+        <div className="flex items-center gap-2 text-[10px] shrink-0 ml-auto">
+          <div className="flex items-center gap-1 text-neutral-400">
+            <span className="hidden xs:inline">SRC:</span>
+            <span className={`font-bold px-1.5 py-0.5 rounded bg-neutral-950 border border-neutral-800 ${audioSource === 'mp3' ? 'text-amber-400' : 'text-cyan-400'}`}>
+              {audioSource === 'mp3' ? 'MP3' : 'VOCE'}
             </span>
           </div>
-          <div className="flex items-center gap-1 text-[10px] text-emerald-400 font-mono font-bold">
-            <span>BATT</span>
-            <span className="tracking-tighter">■■■□</span>
+          <div className="flex items-center gap-1 text-emerald-400 font-mono font-bold bg-neutral-950 px-2 py-0.5 rounded border border-neutral-800 shrink-0">
+            <span className="text-[9px]">BATT</span>
+            <span className="text-xs tracking-tighter">■■■□</span>
           </div>
         </div>
       </div>

@@ -16,14 +16,12 @@ import {
 import { soundFx } from './utils/audioEffects';
 import { WalkmanChassis } from './components/WalkmanPlayer/WalkmanChassis';
 import { DictationPad } from './components/DictationExercise/DictationPad';
-import { CassetteDrawer } from './components/CassetteLibrary/CassetteDrawer';
 import { PWAInstallButton, OfflineIndicator } from './components/PWAInstallButton';
 import { Headphones, Info } from 'lucide-react';
 
 export default function App() {
   const [dictations, setDictations] = useState<DictationItem[]>([]);
   const [currentTrackIndex, setCurrentTrackIndex] = useState<number>(0);
-  const [isLibraryOpen, setIsLibraryOpen] = useState(false);
   const [attempts, setAttempts] = useState<Record<string, DictationAttempt>>({});
   const [showInfoModal, setShowInfoModal] = useState(false);
 
@@ -85,20 +83,6 @@ export default function App() {
     setCurrentTrackIndex((prev) => (prev < dictations.length - 1 ? prev + 1 : 0));
   };
 
-  const handleAddCustomDictation = (item: DictationItem) => {
-    saveCustomDictation(item);
-    setDictations((prev) => [item, ...prev]);
-    setCurrentTrackIndex(0);
-  };
-
-  const handleDeleteCustomDictation = (id: string) => {
-    deleteCustomDictation(id);
-    setDictations((prev) => prev.filter((d) => d.id !== id));
-    if (currentTrack?.id === id) {
-      setCurrentTrackIndex(0);
-    }
-  };
-
   const handleSaveAttempt = (attempt: DictationAttempt) => {
     saveDictationAttempt(attempt);
     setAttempts((prev) => ({
@@ -142,14 +126,14 @@ export default function App() {
       </header>
 
       {/* DISPOSIZIONE VERTICALE: 
-          1. Menu Nastri in primo piano subito visibile
-          2. Nome traccia, display LCD e regolazioni audio (volume, velocità, eq) a scomparsa
+          1. Menù scorrevole dei nastri in alto integrato nella scocca
+          2. Nome traccia, display LCD e regolazioni audio a scomparsa
           3. Nastro (cassetta animata)
           4. Comandi fisici di riproduzione
           5. Area testo libera in fondo
       */}
       <main className="flex-1 max-w-2xl w-full mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4">
-        {/* 1, 2, 3, 4: Walkman con Porta-Nastri in alto, traccia/display/opzioni a scomparsa, nastro e tasti */}
+        {/* 1, 2, 3, 4: Walkman con Menù Scorrevole in alto, traccia/display/regolazioni, nastro e tasti */}
         <WalkmanChassis
           currentTrack={currentTrack}
           trackIndex={currentTrackIndex}
@@ -160,7 +144,6 @@ export default function App() {
           onNextTrack={handleNextTrack}
           settings={audioSettings}
           onUpdateSettings={handleUpdateSettings}
-          onOpenLibrary={() => setIsLibraryOpen(true)}
           attempts={attempts}
         />
 
@@ -172,18 +155,6 @@ export default function App() {
         />
       </main>
 
-      {/* Drawer Libreria Nastri */}
-      <CassetteDrawer
-        isOpen={isLibraryOpen}
-        onClose={() => setIsLibraryOpen(false)}
-        dictations={dictations}
-        currentTrackId={currentTrack?.id || null}
-        onSelectTrack={handleSelectTrack}
-        onAddCustomDictation={handleAddCustomDictation}
-        onDeleteCustomDictation={handleDeleteCustomDictation}
-        attempts={attempts}
-      />
-
       {/* Info Modal */}
       {showInfoModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in">
@@ -194,7 +165,7 @@ export default function App() {
               </h3>
               <button
                 onClick={() => setShowInfoModal(false)}
-                className="text-xs bg-stone-100 hover:bg-stone-200 px-2.5 py-1 rounded-lg text-stone-600"
+                className="text-xs bg-stone-100 hover:bg-stone-200 px-2.5 py-1 rounded-lg text-stone-600 cursor-pointer"
               >
                 Chiudi
               </button>
@@ -202,20 +173,23 @@ export default function App() {
 
             <div className="mt-4 space-y-3 text-xs text-stone-600 font-mono leading-relaxed">
               <p>
-                <strong>1. Porta-Nastri in primo piano:</strong> vedi subito tutte le cassette disponibili, filtra per difficoltà o clicca su una cassetta per inserirla all'istante nel Walkman.
+                <strong>1. Porta-Nastri in primo piano:</strong> tutte le cassette disponibili sono visibili subito con testo chiaro e leggibile. Clicca su qualsiasi cassetta per inserirla nel Walkman.
               </p>
               <p>
-                <strong>2. Traccia, Display & Opzioni Audio a scomparsa:</strong> controlla il contanastri e apri le <em>Regolazioni Audio</em> quando ti servono (volume, velocità 0.7x-1.15x, equalizzatore Dolby).
+                <strong>2. Traccia, Display & Regolazioni:</strong> controlla il contatore nastro e il VU meter. Clicca su <em>REGOLAZIONI</em> per aprire/chiudere le opzioni audio (volume, velocità 0.7x-1.15x, equalizzatore Dolby).
               </p>
               <p>
-                <strong>3. Nastro:</strong> visualizza la rotazione delle bobine del nastro magnetico.
+                <strong>3. Nastro:</strong> visualizza la rotazione delle bobine del nastro magnetico durante la riproduzione.
               </p>
               <p>
-                <strong>4. Comandi fisici:</strong> premi PLAY per ascoltare, REW/FF per andare avanti o indietro di 5s, A-B per creare un loop della frase.
+                <strong>4. Comandi meccanici:</strong> premi PLAY per ascoltare, REW/FF per spostarti di 5s, A-B per impostare un loop.
               </p>
               <p>
-                <strong>5. Area testo libera in fondo:</strong> digita liberamente i caratteri cinesi senza distrazioni e premi <em>Controlla Dettato</em>.
+                <strong>5. Area testo libera in fondo:</strong> scrivi liberamente i caratteri cinesi senza distrazioni e premi <em>Controlla Dettato</em>.
               </p>
+              <div className="p-2.5 bg-amber-50 rounded-xl border border-amber-200 text-amber-900 mt-2">
+                <strong>Nota sui file MP3:</strong> Puoi aggiungere o modificare le tracce audio posizionando direttamente i file <code>.mp3</code> nella cartella <code>/public/audio/</code> e aggiornando il file <code>/public/audio/dettati.txt</code> (1 riga per dettato).
+              </div>
             </div>
 
             <button
