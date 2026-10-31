@@ -141,27 +141,30 @@ export default function App() {
         </div>
       </header>
 
-      {/* DISPOSIZIONE VERTICALE RICHIESTA: 
-          1. Menu (volume, velocità, eq) 
-          2. Nome traccia & display
-          3. Nastro (cassetta)
-          4. Comandi riproduzione
-          5. Area testo libera in ultimo
+      {/* DISPOSIZIONE VERTICALE: 
+          1. Menu Nastri in primo piano subito visibile
+          2. Nome traccia, display LCD e regolazioni audio (volume, velocità, eq) a scomparsa
+          3. Nastro (cassetta animata)
+          4. Comandi fisici di riproduzione
+          5. Area testo libera in fondo
       */}
       <main className="flex-1 max-w-2xl w-full mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4">
-        {/* 1, 2, 3, 4: Walkman con controlli sopra, nome traccia, nastro e comandi sotto */}
+        {/* 1, 2, 3, 4: Walkman con Porta-Nastri in alto, traccia/display/opzioni a scomparsa, nastro e tasti */}
         <WalkmanChassis
           currentTrack={currentTrack}
           trackIndex={currentTrackIndex}
           totalTracks={dictations.length || 1}
+          dictations={dictations}
+          onSelectTrack={handleSelectTrack}
           onPrevTrack={handlePrevTrack}
           onNextTrack={handleNextTrack}
           settings={audioSettings}
           onUpdateSettings={handleUpdateSettings}
           onOpenLibrary={() => setIsLibraryOpen(true)}
+          attempts={attempts}
         />
 
-        {/* 5. IN ULTIMO: Area testo libera */}
+        {/* 5. IN FONDO: Area testo libera */}
         <DictationPad
           currentTrack={currentTrack}
           onSaveAttempt={handleSaveAttempt}
@@ -199,19 +202,19 @@ export default function App() {
 
             <div className="mt-4 space-y-3 text-xs text-stone-600 font-mono leading-relaxed">
               <p>
-                <strong>1. Menu in alto:</strong> regola volume, velocità del nastro (0.7x, 0.85x, 1.0x, 1.15x), equalizzazione o cambia nastro.
+                <strong>1. Porta-Nastri in primo piano:</strong> vedi subito tutte le cassette disponibili, filtra per difficoltà o clicca su una cassetta per inserirla all'istante nel Walkman.
               </p>
               <p>
-                <strong>2. Traccia & Display:</strong> vedi il titolo e naviga tra le tracce con i pulsanti ◄ e ►.
+                <strong>2. Traccia, Display & Opzioni Audio a scomparsa:</strong> controlla il contanastri e apri le <em>Regolazioni Audio</em> quando ti servono (volume, velocità 0.7x-1.15x, equalizzatore Dolby).
               </p>
               <p>
-                <strong>3. Nastro:</strong> visualizza il movimento del nastro della cassetta.
+                <strong>3. Nastro:</strong> visualizza la rotazione delle bobine del nastro magnetico.
               </p>
               <p>
-                <strong>4. Comandi fisici:</strong> premi PLAY per ascoltare, REW/FF per andare avanti o indietro di 5s, A-B per ripetere la frase.
+                <strong>4. Comandi fisici:</strong> premi PLAY per ascoltare, REW/FF per andare avanti o indietro di 5s, A-B per creare un loop della frase.
               </p>
               <p>
-                <strong>5. Area testo libera:</strong> scrivi liberamente i caratteri cinesi nel campo di testo in basso e premi <em>Controlla Dettato</em>.
+                <strong>5. Area testo libera in fondo:</strong> digita liberamente i caratteri cinesi senza distrazioni e premi <em>Controlla Dettato</em>.
               </p>
             </div>
 
