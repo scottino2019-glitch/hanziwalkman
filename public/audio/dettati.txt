@@ -22,4 +22,4 @@ Avanzato | hsk5_01_cultura_te.mp3 | 10. Cultura del Tè Cinese | 中国茶文化
 Avanzato | hsk5_02_tecnologia.mp3 | 11. Tecnologia e Vita | 随着数字化技术的普及，移动支付和共享经济深刻改变了现代人的日常消费习惯。
 Avanzato | hsk6_01_ecologia.mp3 | 12. Ecologia e Natura | 人与自然是不可分割的生命共同体，唯有尊重自然规律，方能实现协调发展。
 Intermedio | hsk3_01_strada.mp3 | 13. Dialogo Lungo: Fine Settimana a Pechino | 上个周末我和朋友一起去了故宫。北京的天气非常好，晴空万里。我们在故宫参观了三个小时，拍了很多漂亮的照片。傍晚的时候，我们去王府井吃了正宗的北京烤鸭。
-Avanzato | hsk5_01_cultura_te.mp3 | 14. Testo Lungo: L'Importanza della Lettura | 读书不仅能够开阔我们的视野，还能丰富我们的精神世界。每当我们翻开一本好书，就像是在和一个智者进行跨越时空的深层对话。在这个快节奏的数字时代，保持每天静心阅读的习惯尤为珍贵。
+Avanzato | hsk6_02_libreria.mp3 | 14. Testo Lungo: L'Importanza della Lettura | 读书不仅能够开阔我们的视野，还能丰富我们的精神世界。每当我们翻开一本好书，就像是在和一个智者进行跨越时空的深层对话。在这个快节奏的数字时代，保持每天静心阅读的习惯尤为珍贵。
