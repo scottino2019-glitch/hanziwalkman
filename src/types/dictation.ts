@@ -28,5 +28,4 @@ export interface AudioSettings {
   soundFxEnabled: boolean;
   tapeEq: 'NORMAL' | 'CrO2' | 'METAL';
   volume: number;
-  voiceMode: 'native_audio' | 'speech_synthesis';
 }

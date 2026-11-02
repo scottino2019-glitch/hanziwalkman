@@ -9,11 +9,10 @@ interface TapeReelProps {
 }
 
 export const TapeReel: React.FC<TapeReelProps> = ({ isPlaying, progress, speed, currentTrack }) => {
-  // Spool radius in SVG coordinate space (viewBox 0 0 360 200)
-  // Left reel unwinds (radius shrinks from 38 to 16)
-  // Right reel winds up (radius grows from 16 to 38)
-  const leftRadius = 38 - progress * 20;
-  const rightRadius = 18 + progress * 20;
+  // Guard progress against NaN
+  const safeProgress = isNaN(progress) ? 0 : Math.min(1, Math.max(0, progress));
+  const leftRadius = 38 - safeProgress * 20;
+  const rightRadius = 18 + safeProgress * 20;
   const spinSec = Math.max(0.6, 2 / (speed || 1));
 
   return (

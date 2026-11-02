@@ -2,23 +2,26 @@ import React, { useState, useEffect } from 'react';
 import { DictationItem, DictationAttempt } from '../../types/dictation';
 import { CheckCircle2, RotateCcw, Eye, EyeOff, Award, BookOpen, Volume2 } from 'lucide-react';
 import { soundFx } from '../../utils/audioEffects';
-import { speakChineseText } from '../../utils/chineseSpeech';
+import { speakChineseText, stopChineseSpeech } from '../../utils/chineseSpeech';
 
 interface DictationPadProps {
   currentTrack: DictationItem | null;
   onSaveAttempt: (attempt: DictationAttempt) => void;
   previousAttempt?: DictationAttempt;
+  onPauseWalkman?: () => void;
 }
 
 export const DictationPad: React.FC<DictationPadProps> = ({
   currentTrack,
   onSaveAttempt,
   previousAttempt,
+  onPauseWalkman,
 }) => {
   const [userInput, setUserInput] = useState('');
   const [hasChecked, setHasChecked] = useState(false);
   const [showSolution, setShowSolution] = useState(false);
   const [score, setScore] = useState<number | null>(null);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const [charDiff, setCharDiff] = useState<
     Array<{ char: string; expected?: string; status: 'correct' | 'wrong' }>
   >([]);
@@ -29,6 +32,7 @@ export const DictationPad: React.FC<DictationPadProps> = ({
     setHasChecked(false);
     setShowSolution(false);
     setScore(null);
+    setIsSpeaking(false);
     setCharDiff([]);
   }, [currentTrack?.id]);
 
@@ -152,13 +156,26 @@ export const DictationPad: React.FC<DictationPadProps> = ({
           <button
             onClick={() => {
               soundFx.playClick('switch');
-              speakChineseText(currentTrack.chineseText, 0.9);
+              if (isSpeaking) {
+                stopChineseSpeech();
+                setIsSpeaking(false);
+              } else {
+                if (onPauseWalkman) onPauseWalkman();
+                setIsSpeaking(true);
+                speakChineseText(currentTrack.chineseText, 0.9, () => {
+                  setIsSpeaking(false);
+                });
+              }
             }}
-            title="Ascolta con voce cinese zh-CN"
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 font-mono text-xs font-semibold transition cursor-pointer border border-stone-300"
+            title={isSpeaking ? 'Ferma pronuncia' : 'Ascolta pronuncia testo (zh-CN)'}
+            className={`flex items-center gap-1.5 px-3 py-2 rounded-xl font-mono text-xs font-semibold transition cursor-pointer border ${
+              isSpeaking
+                ? 'bg-amber-100 border-amber-400 text-amber-900 animate-pulse shadow-xs'
+                : 'bg-stone-100 hover:bg-stone-200 text-stone-700 border-stone-300'
+            }`}
           >
-            <Volume2 className="w-3.5 h-3.5 text-amber-600" />
-            <span>Voce zh-CN</span>
+            <Volume2 className={`w-3.5 h-3.5 ${isSpeaking ? 'text-amber-700' : 'text-amber-600'}`} />
+            <span>{isSpeaking ? 'In Lettura...' : 'Pronuncia zh-CN'}</span>
           </button>
 
           <button

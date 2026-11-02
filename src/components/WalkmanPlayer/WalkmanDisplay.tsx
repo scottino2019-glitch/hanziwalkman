@@ -14,7 +14,7 @@ interface WalkmanDisplayProps {
   autoPauseDuration: number;
   tapeCounter: number;
   onResetCounter: () => void;
-  audioSource: 'mp3' | 'speech';
+  audioError?: string | null;
 }
 
 export const WalkmanDisplay: React.FC<WalkmanDisplayProps> = ({
@@ -29,7 +29,7 @@ export const WalkmanDisplay: React.FC<WalkmanDisplayProps> = ({
   autoPauseDuration,
   tapeCounter,
   onResetCounter,
-  audioSource,
+  audioError,
 }) => {
   // Stereo Peak Level Meter simulation
   const [vuLeft, setVuLeft] = useState(0);
@@ -37,8 +37,8 @@ export const WalkmanDisplay: React.FC<WalkmanDisplayProps> = ({
 
   useEffect(() => {
     if (!isPlaying || isPaused) {
-      setVuLeft((prev) => (prev !== 0 ? 0 : prev));
-      setVuRight((prev) => (prev !== 0 ? 0 : prev));
+      setVuLeft(0);
+      setVuRight(0);
       return;
     }
 
@@ -64,7 +64,7 @@ export const WalkmanDisplay: React.FC<WalkmanDisplayProps> = ({
 
   return (
     <div className="w-full bg-neutral-900 border-2 border-neutral-700 rounded-xl p-3 shadow-[inset_0_2px_4px_rgba(0,0,0,0.8),0_2px_6px_rgba(0,0,0,0.4)]">
-      {/* Top Header: Mechanical Tape Counter & Indicators (Responsive, guaranteed not to overflow) */}
+      {/* Top Header: Mechanical Tape Counter & Indicators */}
       <div className="flex flex-wrap items-center justify-between gap-y-1.5 pb-2 mb-2 border-b border-neutral-800 text-[11px] font-mono">
         {/* Mechanical 3-digit Counter with Plunger Button */}
         <div className="flex items-center gap-1.5 shrink-0">
@@ -87,9 +87,9 @@ export const WalkmanDisplay: React.FC<WalkmanDisplayProps> = ({
         {/* Source & Battery Indicator */}
         <div className="flex items-center gap-2 text-[10px] shrink-0 ml-auto">
           <div className="flex items-center gap-1 text-neutral-400">
-            <span className="hidden xs:inline">SRC:</span>
-            <span className={`font-bold px-1.5 py-0.5 rounded bg-neutral-950 border border-neutral-800 ${audioSource === 'mp3' ? 'text-amber-400' : 'text-cyan-400'}`}>
-              {audioSource === 'mp3' ? 'MP3' : 'VOCE'}
+            <span className="hidden xs:inline">DECK:</span>
+            <span className="font-bold px-1.5 py-0.5 rounded bg-neutral-950 border border-neutral-800 text-amber-400">
+              CASSETTE MP3
             </span>
           </div>
           <div className="flex items-center gap-1 text-emerald-400 font-mono font-bold bg-neutral-950 px-2 py-0.5 rounded border border-neutral-800 shrink-0">
@@ -107,7 +107,11 @@ export const WalkmanDisplay: React.FC<WalkmanDisplayProps> = ({
         {/* First Row: Status Flags */}
         <div className="flex items-center justify-between text-xs tracking-wider z-20 relative font-bold">
           <div className="flex items-center gap-2">
-            {isPlaying && !isPaused ? (
+            {audioError ? (
+              <span className="bg-[#4a1c1c] text-[#fca5a5] px-1.5 py-0.5 rounded text-[10px] font-black animate-pulse">
+                ERR: NO AUDIO
+              </span>
+            ) : isPlaying && !isPaused ? (
               <span className="bg-[#1e301b] text-[#a5c29b] px-1.5 py-0.5 rounded text-[11px] animate-pulse">
                 ▶ PLAY
               </span>
@@ -123,7 +127,7 @@ export const WalkmanDisplay: React.FC<WalkmanDisplayProps> = ({
 
             {isLoopingAB && (
               <span className="bg-[#1e301b] text-[#9bd6c2] px-1.5 py-0.5 rounded text-[10px]">
-                A-B LOOP [{abPoints.a?.toFixed(0) || '0'}s-{abPoints.b?.toFixed(0) || 'E'}s]
+                A-B [{abPoints.a?.toFixed(0) || '0'}s-{abPoints.b?.toFixed(0) || 'E'}s]
               </span>
             )}
 
@@ -146,7 +150,7 @@ export const WalkmanDisplay: React.FC<WalkmanDisplayProps> = ({
         <div className="mt-2 pt-1 border-t border-[#768a6e] flex items-center justify-between z-20 relative">
           <div className="truncate max-w-[70%]">
             <span className="font-bold text-xs tracking-wide">
-              {currentTrack ? currentTrack.title : 'NESSUNA CASSETTA CARICATA'}
+              {audioError ? `⚠️ ${audioError}` : currentTrack ? currentTrack.title : 'NESSUNA CASSETTA CARICATA'}
             </span>
           </div>
           <div className="text-[10px] px-1.5 py-0.5 rounded bg-[#1e301b] text-[#a5c29b] font-black shrink-0">

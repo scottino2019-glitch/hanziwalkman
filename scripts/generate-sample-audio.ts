@@ -66,7 +66,8 @@ const files = [
   { name: 'hsk4_02_studio.mp3', tones: [523.25, 587.33, 659.25, 783.99, 880], sec: 7 },
   { name: 'hsk5_01_cultura_te.mp3', tones: [329.63, 392, 440, 493.88, 587.33], sec: 7 },
   { name: 'hsk5_02_tecnologia.mp3', tones: [440, 523.25, 587.33, 659.25, 783.99], sec: 7 },
-  { name: 'hsk6_01_ecologia.mp3', tones: [392, 440, 523.25, 659.25, 783.99, 880], sec: 8 }
+  { name: 'hsk6_01_ecologia.mp3', tones: [392, 440, 523.25, 659.25, 783.99, 880], sec: 8 },
+  { name: 'hsk6_02_libreria.mp3', tones: [440, 523.25, 659.25, 783.99, 880, 987.77], sec: 8 }
 ];
 
 for (const f of files) {
@@ -85,7 +86,7 @@ In questa cartella puoi inserire i tuoi file audio in formato **MP3** (es. \`lez
 
 ## Come aggiungere un nuovo dettato:
 1. Copia il tuo file \`.mp3\` in questa cartella: \`/public/audio/tuo_file.mp3\`
-2. Modifica il file \`/public/audio/dictations.json\` aggiungendo una voce con il percorso: \`"audioSrc": "/audio/tuo_file.mp3"\`
+2. Modifica il file \`/public/audio/dettati.txt\` aggiungendo una riga (Difficoltà | file.mp3 | Titolo | Frase)
    oppure usa direttamente il tasto **"➕ Aggiungi Dettato"** all'interno dell'app web, dove potrai caricare file audio dal computer o inserire testi in Hanzi e Pinyin in tempo reale!
 
 L'app supporta sia la riproduzione diretta di veri MP3 sia la voce nativa cinese (Web Speech API zh-CN) per l'ascolto guidato frase per frase.

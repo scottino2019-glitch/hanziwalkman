@@ -1,5 +1,5 @@
 import React from 'react';
-import { Volume2, VolumeX, Sliders, Mic, Disc3, Headphones } from 'lucide-react';
+import { Volume2, VolumeX, Sliders, Headphones } from 'lucide-react';
 import { soundFx } from '../../utils/audioEffects';
 
 interface WalkmanControlsProps {
@@ -9,8 +9,6 @@ interface WalkmanControlsProps {
   onAutoPauseDurationChange: (duration: number) => void;
   volume: number;
   onVolumeChange: (vol: number) => void;
-  audioSource: 'mp3' | 'speech';
-  onAudioSourceChange: (source: 'mp3' | 'speech') => void;
   tapeEq: 'NORMAL' | 'CrO2' | 'METAL';
   onTapeEqChange: (eq: 'NORMAL' | 'CrO2' | 'METAL') => void;
   soundFxEnabled: boolean;
@@ -24,8 +22,6 @@ export const WalkmanControls: React.FC<WalkmanControlsProps> = ({
   onAutoPauseDurationChange,
   volume,
   onVolumeChange,
-  audioSource,
-  onAudioSourceChange,
   tapeEq,
   onTapeEqChange,
   soundFxEnabled,
@@ -97,7 +93,7 @@ export const WalkmanControls: React.FC<WalkmanControlsProps> = ({
         {/* 1. SPEED / PITCH TRIM */}
         <div className="bg-neutral-950 p-2.5 rounded-lg border border-neutral-800 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-1.5 text-[10px] text-neutral-400 font-bold uppercase">
-            <span>VELOCITÀ NASTRO</span>
+            <span>VELOCITÀ MP3</span>
             <span className="text-amber-400">{playbackRate.toFixed(2)}x</span>
           </div>
           <div className="grid grid-cols-4 gap-1">
@@ -148,50 +144,13 @@ export const WalkmanControls: React.FC<WalkmanControlsProps> = ({
           </div>
         </div>
 
-        {/* 3. AUDIO SOURCE (MP3 / SPEECH) */}
+        {/* 3. TAPE EQUALIZER / DOLBY NR */}
         <div className="bg-neutral-950 p-2.5 rounded-lg border border-neutral-800 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-1.5 text-[10px] text-neutral-400 font-bold uppercase">
-            <span>SORGENTE AUDIO</span>
+            <span>EQUALIZZATORE NR</span>
             <Sliders className="w-3 h-3 text-neutral-400" />
           </div>
-          <div className="grid grid-cols-2 gap-1">
-            <button
-              onClick={() => {
-                soundFx.playClick('switch');
-                onAudioSourceChange('mp3');
-              }}
-              className={`flex items-center justify-center gap-1 py-1 rounded text-[10px] font-bold border transition cursor-pointer ${
-                audioSource === 'mp3'
-                  ? 'bg-amber-600 text-white border-amber-400'
-                  : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300 border-neutral-700'
-              }`}
-            >
-              <Disc3 className="w-3 h-3" />
-              <span>MP3 CASSETTE</span>
-            </button>
-            <button
-              onClick={() => {
-                soundFx.playClick('switch');
-                onAudioSourceChange('speech');
-              }}
-              className={`flex items-center justify-center gap-1 py-1 rounded text-[10px] font-bold border transition cursor-pointer ${
-                audioSource === 'speech'
-                  ? 'bg-cyan-600 text-white border-cyan-400'
-                  : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300 border-neutral-700'
-              }`}
-            >
-              <Mic className="w-3 h-3" />
-              <span>VOCE zh-CN</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Tape EQ Selector row (Normal / CrO2 / Metal) */}
-      <div className="mt-2.5 pt-2 border-t border-neutral-800 flex items-center justify-between text-[10px] text-neutral-400">
-        <div className="flex items-center gap-2">
-          <span className="font-bold">EQUALIZZATORE NASTRO (DOLBY NR):</span>
-          <div className="flex gap-1">
+          <div className="grid grid-cols-3 gap-1">
             {(['NORMAL', 'CrO2', 'METAL'] as const).map((eq) => (
               <button
                 key={eq}
@@ -199,10 +158,10 @@ export const WalkmanControls: React.FC<WalkmanControlsProps> = ({
                   soundFx.playClick('switch');
                   onTapeEqChange(eq);
                 }}
-                className={`px-2 py-0.5 rounded text-[9px] font-bold border transition cursor-pointer ${
+                className={`py-1 rounded text-[10px] font-bold border transition cursor-pointer ${
                   tapeEq === eq
-                    ? 'bg-neutral-700 text-amber-300 border-amber-400/50'
-                    : 'bg-neutral-850 hover:bg-neutral-750 text-neutral-400 border-neutral-800'
+                    ? 'bg-amber-500 text-neutral-950 border-amber-300 shadow-xs'
+                    : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300 border-neutral-700'
                 }`}
               >
                 {eq}
@@ -210,7 +169,12 @@ export const WalkmanControls: React.FC<WalkmanControlsProps> = ({
             ))}
           </div>
         </div>
-        <span className="text-neutral-500 italic hidden sm:inline">ANTI-ROLLING MECH</span>
+      </div>
+
+      {/* Footer bar */}
+      <div className="mt-2.5 pt-2 border-t border-neutral-800 flex items-center justify-between text-[10px] text-neutral-400">
+        <span className="font-bold text-neutral-400">LETTORE CASSETTE MP3 STEREO</span>
+        <span className="text-neutral-500 italic">ANTI-ROLLING HIGH-PRECISION MECH</span>
       </div>
     </div>
   );

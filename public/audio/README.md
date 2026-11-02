@@ -1,20 +1,10 @@
-# Come aggiungere un dettato (Semplicissimo, NESSUN JSON!)
+# Cartella Audio per Dettati Cinesi
 
-Non serve compilare file JSON complessi. Puoi procedere in due modi semplicissimi:
+In questa cartella puoi inserire i tuoi file audio in formato **MP3** (es. `lezione1.mp3`, `dettato_hsk2.mp3`).
 
-### Metodo 1: Modifica il file `dettati.txt` (1 riga per esercizio)
-1. Inserisci il tuo file MP3 qui dentro: `/public/audio/mio_audio.mp3`
-2. Apri il file `/public/audio/dettati.txt` e aggiungi semplicemente una riga:
-   ```text
-   Principiante | mio_audio.mp3 | Titolo della lezione | 你的中文句子
-   ```
-   Puoi usare `Principiante`, `Intermedio` o `Avanzato`.
+## Come aggiungere un nuovo dettato:
+1. Copia il tuo file `.mp3` in questa cartella: `/public/audio/tuo_file.mp3`
+2. Modifica il file `/public/audio/dettati.txt` aggiungendo una riga (Difficoltà | file.mp3 | Titolo | Frase)
+   oppure usa direttamente il tasto **"➕ Aggiungi Dettato"** all'interno dell'app web, dove potrai caricare file audio dal computer o inserire testi in Hanzi e Pinyin in tempo reale!
 
----
-
-### Metodo 2: Direttamente dall'App Web
-1. Apri l'app e clicca su **"LIBRERIA NASTRI"** -> **"+ Aggiungi MP3"**.
-2. Scegli il livello (Principiante / Intermedio / Avanzato).
-3. Seleziona il file MP3 dal tuo computer o scrivi il nome del file.
-4. Incolla la frase in caratteri cinesi e clicca su **Salva**.
-   La nuova cassetta comparirà subito nel Walkman!
+L'app supporta sia la riproduzione diretta di veri MP3 sia la voce nativa cinese (Web Speech API zh-CN) per l'ascolto guidato frase per frase.

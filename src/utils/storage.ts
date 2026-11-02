@@ -113,13 +113,6 @@ export async function fetchDefaultDictations(): Promise<DictationItem[]> {
       }
     }
 
-    // 2. Fallback to /audio/dictations.json if text file was not found
-    const jsonRes = await fetch('/audio/dictations.json');
-    if (jsonRes.ok) {
-      const data = await jsonRes.json();
-      if (Array.isArray(data)) return data;
-    }
-
     return [];
   } catch (err) {
     console.warn('Error reading dictation files:', err);

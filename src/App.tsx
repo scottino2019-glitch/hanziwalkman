@@ -31,7 +31,6 @@ export default function App() {
     soundFxEnabled: true,
     tapeEq: 'NORMAL',
     volume: 0.9,
-    voiceMode: 'native_audio',
   });
 
   const handleUpdateSettings = React.useCallback((newSettings: Partial<AudioSettings>) => {
@@ -91,6 +90,8 @@ export default function App() {
     }));
   };
 
+  const pauseWalkmanRef = React.useRef<(() => void) | null>(null);
+
   return (
     <div className="min-h-screen bg-[#eef1f5] text-stone-800 flex flex-col font-sans selection:bg-amber-400 selection:text-stone-950">
       <OfflineIndicator />
@@ -133,7 +134,7 @@ export default function App() {
           5. Area testo libera in fondo
       */}
       <main className="flex-1 max-w-2xl w-full mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4">
-        {/* 1, 2, 3, 4: Walkman con Menù Scorrevole in alto, traccia/display/regolazioni, nastro e tasti */}
+        {/* 1, 2, 3, 4: Walkman dedicato alla riproduzione pura dei nastri MP3 */}
         <WalkmanChassis
           currentTrack={currentTrack}
           trackIndex={currentTrackIndex}
@@ -145,13 +146,21 @@ export default function App() {
           settings={audioSettings}
           onUpdateSettings={handleUpdateSettings}
           attempts={attempts}
+          onRegisterPause={(pauseFn) => {
+            pauseWalkmanRef.current = pauseFn;
+          }}
         />
 
-        {/* 5. IN FONDO: Area testo libera */}
+        {/* 5. IN FONDO: Area testo del dettato con lettura vocale zh-CN indipendente */}
         <DictationPad
           currentTrack={currentTrack}
           onSaveAttempt={handleSaveAttempt}
           previousAttempt={currentTrack ? attempts[currentTrack.id] : undefined}
+          onPauseWalkman={() => {
+            if (pauseWalkmanRef.current) {
+              pauseWalkmanRef.current();
+            }
+          }}
         />
       </main>
 

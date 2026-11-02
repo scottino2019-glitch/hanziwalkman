@@ -4,12 +4,7 @@ import { TapeReel } from './TapeReel';
 import { WalkmanDisplay } from './WalkmanDisplay';
 import { PhysicalButtons } from './PhysicalButtons';
 import { WalkmanControls } from './WalkmanControls';
-import {
-  speakChineseText,
-  stopChineseSpeech,
-  pauseChineseSpeech,
-  resumeChineseSpeech,
-} from '../../utils/chineseSpeech';
+import { stopChineseSpeech } from '../../utils/chineseSpeech';
 import { soundFx } from '../../utils/audioEffects';
 import {
   Palette,
@@ -37,6 +32,7 @@ interface WalkmanChassisProps {
   onOpenLibrary?: () => void;
   attempts?: Record<string, DictationAttempt>;
   onSentenceComplete?: () => void;
+  onRegisterPause?: (fn: () => void) => void;
 }
 
 export const WalkmanChassis: React.FC<WalkmanChassisProps> = ({
@@ -52,6 +48,7 @@ export const WalkmanChassis: React.FC<WalkmanChassisProps> = ({
   onOpenLibrary,
   attempts = {},
   onSentenceComplete,
+  onRegisterPause,
 }) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const tapeRackRef = useRef<HTMLDivElement | null>(null);
@@ -71,6 +68,7 @@ export const WalkmanChassis: React.FC<WalkmanChassisProps> = ({
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [tapeCounter, setTapeCounter] = useState(0);
+  const [audioError, setAudioError] = useState<string | null>(null);
 
   // A-B Loop State
   const [isLoopingAB, setIsLoopingAB] = useState(false);
@@ -82,6 +80,20 @@ export const WalkmanChassis: React.FC<WalkmanChassisProps> = ({
   const pauseTimerRef = useRef<number | null>(null);
   const progress = duration > 0 ? Math.min(1, Math.max(0, currentTime / duration)) : 0;
 
+  // Register pause handler so the dictation pad can pause the cassette when listening to Chinese pronunciation
+  useEffect(() => {
+    if (onRegisterPause) {
+      onRegisterPause(() => {
+        if (audioRef.current && isPlaying && !isPaused) {
+          try {
+            audioRef.current.pause();
+            setIsPaused(true);
+          } catch {}
+        }
+      });
+    }
+  }, [onRegisterPause, isPlaying, isPaused]);
+
   // Scroll active tape item into view when currentTrack changes
   useEffect(() => {
     if (!currentTrack || !tapeRackRef.current) return;
@@ -91,27 +103,39 @@ export const WalkmanChassis: React.FC<WalkmanChassisProps> = ({
     }
   }, [currentTrack?.id]);
 
-  // Handle Audio Element Loading
+  // Handle Track Loading
   useEffect(() => {
-    if (!audioRef.current || !currentTrack) return;
+    if (!currentTrack) return;
+
+    if (pauseTimerRef.current !== null) {
+      clearTimeout(pauseTimerRef.current);
+      pauseTimerRef.current = null;
+    }
 
     setIsPlaying(false);
     setIsPaused(false);
     setCurrentTime(0);
+    setAudioError(null);
     setAbPoints({ a: null, b: null });
     setIsLoopingAB(false);
 
-    audioRef.current.playbackRate = settings.playbackRate;
-    audioRef.current.volume = settings.volume;
+    if (audioRef.current) {
+      audioRef.current.playbackRate = settings.playbackRate;
+      audioRef.current.volume = settings.volume;
 
-    const targetSrc = currentTrack.audioSrc;
-    if (!audioRef.current.src.endsWith(targetSrc)) {
-      audioRef.current.src = targetSrc;
-      audioRef.current.load();
+      const targetSrc = currentTrack.audioSrc;
+      if (!audioRef.current.src.endsWith(targetSrc)) {
+        try {
+          audioRef.current.src = targetSrc;
+          audioRef.current.load();
+        } catch {
+          // Ignore loading errors
+        }
+      }
     }
-  }, [currentTrack?.id, currentTrack?.audioSrc]);
+  }, [currentTrack?.id, currentTrack?.audioSrc, settings.playbackRate, settings.volume]);
 
-  // Sync settings
+  // Sync volume & rate
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.playbackRate = settings.playbackRate;
@@ -130,8 +154,7 @@ export const WalkmanChassis: React.FC<WalkmanChassisProps> = ({
 
   useEffect(() => {
     return () => {
-      if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
-      stopChineseSpeech();
+      if (pauseTimerRef.current !== null) clearTimeout(pauseTimerRef.current);
     };
   }, []);
 
@@ -146,93 +169,87 @@ export const WalkmanChassis: React.FC<WalkmanChassisProps> = ({
       return;
     }
 
-    if (settings.voiceMode === 'speech_synthesis') {
-      setIsPlaying(true);
-      setIsPaused(false);
-      speakChineseText(
-        currentTrack.chineseText,
-        settings.playbackRate,
-        () => {
-          setIsPlaying(false);
-          setIsPaused(false);
-          if (onSentenceComplete) onSentenceComplete();
-        }
-      );
-      return;
-    }
+    // Stop speech synthesis if running in the dictation pad
+    stopChineseSpeech();
 
     if (audioRef.current) {
-      const playPromise = audioRef.current.play();
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => {
-            setIsPlaying(true);
-            setIsPaused(false);
-          })
-          .catch((err) => {
-            console.warn('Audio playback error, fallback to speech synthesis:', err);
-            speakChineseText(
-              currentTrack.chineseText,
-              settings.playbackRate,
-              () => {
-                setIsPlaying(false);
-                setIsPaused(false);
-                if (onSentenceComplete) onSentenceComplete();
-              }
-            );
-          });
+      try {
+        const playPromise = audioRef.current.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              setIsPlaying(true);
+              setIsPaused(false);
+              setAudioError(null);
+            })
+            .catch((err) => {
+              console.warn('Audio play error:', err);
+              const fileName = currentTrack.audioSrc.split('/').pop() || 'file';
+              setAudioError(`File non trovato: ${fileName}`);
+              setIsPlaying(false);
+              setIsPaused(false);
+            });
+        }
+      } catch (err) {
+        console.warn('Sync audio play error:', err);
+        setAudioError('Errore riproduzione MP3');
       }
     }
-  }, [currentTrack, settings.voiceMode, settings.playbackRate, onOpenLibrary, onSentenceComplete]);
+  }, [currentTrack, dictations, onSelectTrack, onOpenLibrary]);
 
   // Pause
   const handlePause = useCallback(() => {
     if (!isPlaying) return;
 
-    if (settings.voiceMode === 'speech_synthesis') {
-      if (isPaused) {
-        resumeChineseSpeech();
-        setIsPaused(false);
-      } else {
-        pauseChineseSpeech();
-        setIsPaused(true);
-      }
-      return;
-    }
-
     if (audioRef.current) {
-      if (isPaused) {
-        audioRef.current.play();
-        setIsPaused(false);
-      } else {
-        audioRef.current.pause();
-        setIsPaused(true);
+      try {
+        if (isPaused) {
+          const p = audioRef.current.play();
+          if (p) {
+            p.then(() => setIsPaused(false)).catch(() => {});
+          } else {
+            setIsPaused(false);
+          }
+        } else {
+          audioRef.current.pause();
+          setIsPaused(true);
+        }
+      } catch (e) {
+        console.warn('Audio pause/play toggle error:', e);
       }
     }
-  }, [isPlaying, isPaused, settings.voiceMode]);
+  }, [isPlaying, isPaused]);
 
   // Stop
   const handleStop = useCallback(() => {
     setIsPlaying(false);
     setIsPaused(false);
-    if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
+    setCurrentTime(0);
 
-    if (settings.voiceMode === 'speech_synthesis') {
-      stopChineseSpeech();
+    if (pauseTimerRef.current !== null) {
+      clearTimeout(pauseTimerRef.current);
+      pauseTimerRef.current = null;
     }
 
     if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-      setCurrentTime(0);
+      try {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      } catch {
+        // Ignore audio stop error
+      }
     }
-  }, [settings.voiceMode]);
+  }, []);
 
   // Rewind
   const handleRewind = useCallback(() => {
     if (audioRef.current) {
-      audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 5);
-      setCurrentTime(audioRef.current.currentTime);
+      try {
+        audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 5);
+        setCurrentTime(audioRef.current.currentTime);
+      } catch {
+        // Ignore
+      }
     } else {
       handlePlay();
     }
@@ -241,8 +258,12 @@ export const WalkmanChassis: React.FC<WalkmanChassisProps> = ({
   // Fast forward
   const handleFastForward = useCallback(() => {
     if (audioRef.current && duration > 0) {
-      audioRef.current.currentTime = Math.min(duration, audioRef.current.currentTime + 5);
-      setCurrentTime(audioRef.current.currentTime);
+      try {
+        audioRef.current.currentTime = Math.min(duration, audioRef.current.currentTime + 5);
+        setCurrentTime(audioRef.current.currentTime);
+      } catch {
+        // Ignore
+      }
     }
   }, [duration]);
 
@@ -320,11 +341,20 @@ export const WalkmanChassis: React.FC<WalkmanChassisProps> = ({
         ref={audioRef}
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={() => {
-          if (audioRef.current) setDuration(audioRef.current.duration);
+          if (audioRef.current) {
+            setDuration(audioRef.current.duration || 0);
+            setAudioError(null);
+          }
+        }}
+        onCanPlay={() => {
+          setAudioError(null);
         }}
         onEnded={handleEnded}
-        onError={(e) => {
-          console.warn('Audio element error event:', e);
+        onError={() => {
+          const fileName = currentTrack?.audioSrc.split('/').pop() || 'file';
+          setAudioError(`File MP3 non trovato: ${fileName}`);
+          setIsPlaying(false);
+          setIsPaused(false);
         }}
       />
 
@@ -361,14 +391,14 @@ export const WalkmanChassis: React.FC<WalkmanChassisProps> = ({
                 />
                 <button
                   onClick={() => setColorway('brushed_silver')}
-                  title="Argento"
+                  title="Argento Spazzolato"
                   className={`w-4 h-4 rounded-full bg-slate-300 transition border ${
                     colorway === 'brushed_silver' ? 'border-white scale-110 shadow-xs' : 'border-neutral-700 opacity-60'
                   }`}
                 />
                 <button
                   onClick={() => setColorway('cobalt_teal')}
-                  title="Teal"
+                  title="Verde Acqua / Cobalto"
                   className={`w-4 h-4 rounded-full bg-teal-500 transition border ${
                     colorway === 'cobalt_teal' ? 'border-white scale-110 shadow-xs' : 'border-neutral-700 opacity-60'
                   }`}
@@ -377,26 +407,26 @@ export const WalkmanChassis: React.FC<WalkmanChassisProps> = ({
             </div>
           </div>
 
-          {/* Filtri rapidi per difficoltà & frecce scorrimento */}
-          <div className="flex items-center justify-between gap-1">
-            <div className="flex flex-wrap gap-1 font-mono text-xs">
-              {(['TUTTI', 'PRINCIPIANTE', 'INTERMEDIO', 'AVANZATO'] as const).map((cat) => (
+          {/* Filtri Difficoltà con bottoni larghi e frecce scorrimento */}
+          <div className="flex items-center justify-between gap-2 pt-0.5">
+            <div className="flex items-center gap-1.5 overflow-x-auto py-0.5">
+              {['TUTTI', 'PRINCIPIANTE', 'INTERMEDIO', 'AVANZATO'].map((cat) => (
                 <button
                   key={cat}
                   onClick={() => {
                     soundFx.playClick('switch');
                     setSelectedFilter(cat);
                   }}
-                  className={`px-2.5 py-0.5 rounded-lg font-bold border transition cursor-pointer text-xs ${
+                  className={`px-2.5 py-1 rounded-lg text-[10px] font-mono font-bold transition whitespace-nowrap cursor-pointer border ${
                     selectedFilter === cat
-                      ? 'bg-amber-500 text-stone-950 border-amber-300 shadow-2xs'
+                      ? 'bg-amber-500 text-stone-950 border-amber-400 shadow-xs font-black'
                       : 'bg-neutral-950 hover:bg-neutral-800 text-neutral-300 border-neutral-800'
                   }`}
                 >
                   {cat === 'TUTTI'
-                    ? 'Tutti'
+                    ? 'Tutti i Nastri'
                     : cat === 'PRINCIPIANTE'
-                    ? 'Base'
+                    ? 'Principiante'
                     : cat === 'INTERMEDIO'
                     ? 'Intermedio'
                     : 'Avanzato'}
@@ -498,12 +528,12 @@ export const WalkmanChassis: React.FC<WalkmanChassisProps> = ({
           </div>
         </div>
 
-        {/* ========================================================================= */}
-        {/* 2. SUBITO SOTTO: NOME DELLA TRACCIA & DISPLAY + CONTROLLI AUDIO A SCOMPARSA */}
-        {/* ========================================================================= */}
-        <div className="bg-neutral-900 border-2 border-neutral-700 rounded-2xl p-3 shadow-md space-y-2">
-          {/* Barra Nome Traccia con Frecce ◄ ► */}
-          <div className="flex items-center justify-between gap-2 bg-neutral-950 p-2 rounded-xl border border-neutral-800 font-mono text-xs">
+        {/* ============================================================== */}
+        {/* 2. NOME TRACCIA, DISPLAY LCD E REGOLAZIONI A SCOMPARSA        */}
+        {/* ============================================================== */}
+        <div className="bg-neutral-900 border-2 border-neutral-700 rounded-2xl p-3 shadow-md space-y-2.5">
+          {/* Barra Titolo Traccia Attiva */}
+          <div className="flex items-center justify-between bg-neutral-950 px-3 py-1.5 rounded-xl border border-neutral-800 text-xs font-mono">
             <button
               onClick={onPrevTrack}
               title="Traccia Precedente"
@@ -512,11 +542,11 @@ export const WalkmanChassis: React.FC<WalkmanChassisProps> = ({
               <ChevronLeft className="w-4 h-4" />
             </button>
 
-            <div className="flex items-center gap-2 truncate px-1 text-center">
-              <span className="text-[10px] text-neutral-500 font-bold shrink-0">
-                {trackIndex + 1}/{totalTracks}
+            <div className="flex items-center gap-2 overflow-hidden px-2">
+              <span className="text-amber-400 font-bold text-[11px] shrink-0">
+                TRACCIA [{trackIndex + 1}/{totalTracks}]:
               </span>
-              <span className="font-bold text-amber-400 text-xs sm:text-sm tracking-wide truncate">
+              <span className="font-bold text-neutral-100 truncate text-xs sm:text-sm">
                 {currentTrack ? currentTrack.title : 'Nessun nastro caricato'}
               </span>
               <span className="text-[9px] px-1.5 py-0.2 rounded bg-neutral-800 text-neutral-300 font-bold shrink-0">
@@ -539,14 +569,14 @@ export const WalkmanChassis: React.FC<WalkmanChassisProps> = ({
             isPlaying={isPlaying}
             isPaused={isPaused}
             currentTime={currentTime}
-            duration={duration || 6}
+            duration={duration}
             isLoopingAB={isLoopingAB}
             abPoints={abPoints}
             playbackRate={settings.playbackRate}
             autoPauseDuration={settings.autoPauseDuration}
             tapeCounter={tapeCounter}
             onResetCounter={() => setTapeCounter(0)}
-            audioSource={settings.voiceMode === 'speech_synthesis' ? 'speech' : 'mp3'}
+            audioError={audioError}
           />
 
           {/* REGOLAZIONI A SCOMPARSA (Solo scritta REGOLAZIONI e Mostra/Nascondi) */}
@@ -559,7 +589,7 @@ export const WalkmanChassis: React.FC<WalkmanChassisProps> = ({
               className="w-full flex items-center justify-between px-3.5 py-2 rounded-xl bg-neutral-950 hover:bg-neutral-800 border border-neutral-800 text-neutral-200 text-xs font-mono transition cursor-pointer"
             >
               <span className="font-bold tracking-wider uppercase text-neutral-200">
-                REGOLAZIONI
+                REGOLAZIONI CASSETTA
               </span>
               <div className="flex items-center gap-1.5 text-amber-400 font-bold text-xs">
                 <span>{isOptionsOpen ? 'Nascondi' : 'Mostra'}</span>
@@ -581,12 +611,6 @@ export const WalkmanChassis: React.FC<WalkmanChassisProps> = ({
                   onAutoPauseDurationChange={(dur) => onUpdateSettings({ autoPauseDuration: dur })}
                   volume={settings.volume}
                   onVolumeChange={(vol) => onUpdateSettings({ volume: vol })}
-                  audioSource={settings.voiceMode === 'speech_synthesis' ? 'speech' : 'mp3'}
-                  onAudioSourceChange={(src) =>
-                    onUpdateSettings({
-                      voiceMode: src === 'speech' ? 'speech_synthesis' : 'native_audio',
-                    })
-                  }
                   tapeEq={settings.tapeEq}
                   onTapeEqChange={(eq) => onUpdateSettings({ tapeEq: eq })}
                   soundFxEnabled={settings.soundFxEnabled}
@@ -614,23 +638,20 @@ export const WalkmanChassis: React.FC<WalkmanChassisProps> = ({
         </div>
 
         {/* ============================================================== */}
-        {/* 4. SOTTO: I COMANDI DI RIPRODUZIONE (TASTI MECCANICI PIANO)    */}
+        {/* 4. COMANDI MECCANICI DI RIPRODUZIONE (TASTI FISICI IN BASSO)  */}
         {/* ============================================================== */}
-        <div>
-          <PhysicalButtons
-            isPlaying={isPlaying}
-            isPaused={isPaused}
-            isLoopingAB={isLoopingAB}
-            onPlay={handlePlay}
-            onPause={handlePause}
-            onStop={handleStop}
-            onRewind={handleRewind}
-            onFastForward={handleFastForward}
-            onToggleAB={handleToggleAB}
-          />
-        </div>
+        <PhysicalButtons
+          isPlaying={isPlaying}
+          isPaused={isPaused}
+          isLoopingAB={isLoopingAB}
+          onPlay={handlePlay}
+          onPause={handlePause}
+          onStop={handleStop}
+          onRewind={handleRewind}
+          onFastForward={handleFastForward}
+          onToggleAB={handleToggleAB}
+        />
       </div>
     </div>
   );
 };
-
