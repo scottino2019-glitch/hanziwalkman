@@ -1,8 +1,12 @@
 node_modules/
 build/
 dist/
+dev-dist/
+.aistudio/
+.vercel/
 coverage/
 .DS_Store
 *.log
+bun.lock*
 .env*
 !.env.example
